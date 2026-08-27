@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpecSheet — จัดสเปค AI Server / Home Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="sme">
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">▦</span>
+    <span class="brand-name">SpecSheet</span>
+    <span class="brand-sub">ใบงานจัดสเปคด้วย AI</span>
+  </div>
+  <nav class="page-tabs">
+    <a href="index.html" class="tab active">เซิร์ฟเวอร์ / SME</a>
+    <a href="gaming.html" class="tab">คอมทั่วไป / เกม</a>
+  </nav>
+  <div class="ai-switch" id="aiSwitch">
+    <span class="ai-label">โมเดล</span>
+    <button class="ai-pill active" data-model="gemini">Gemini</button>
+    <button class="ai-pill" data-model="pathumma">Pathumma</button>
+    <span class="mode-badge" id="modeBadge" title="ตอนนี้ใช้ข้อมูลจำลองในเครื่อง ต่อ backend จริงได้ ดู README">โหมดจำลอง</span>
+  </div>
+</header>
+
+<main class="sheet">
+
+  <!-- ═══ แผงควบคุม: ใบสั่งงาน ═══ -->
+  <section class="ticket" id="ticket">
+    <div class="ticket-head">
+      <h1>เครื่องนี้จะเอาไว้ทำอะไร</h1>
+      <p class="lede">เลือกงานกับงบ ระบบจะจัดสเปคพร้อมเหตุผล และ<strong>บอกตรงๆ ถ้าเช่า cloud คุ้มกว่า</strong></p>
+    </div>
+
+    <div class="usecase-row" id="usecaseRow">
+      <button class="usecase active" data-usecase="ai">
+        <span class="uc-icon">◮</span>
+        <span class="uc-name">AI Server</span>
+        <span class="uc-desc">รัน LLM ในบ้าน · fine-tune · inference</span>
+      </button>
+      <button class="usecase" data-usecase="home">
+        <span class="uc-icon">▤</span>
+        <span class="uc-name">Home Server</span>
+        <span class="uc-desc">NAS · Proxmox · media · backup</span>
+      </button>
+    </div>
+
+    <div class="budget-block">
+      <div class="budget-line">
+        <label for="budgetRange">งบประมาณ</label>
+        <div class="budget-value">
+          <input type="number" id="budgetInput" min="5000" max="300000" step="1000" value="45000">
+          <span class="unit">บาท</span>
+        </div>
+      </div>
+      <input type="range" id="budgetRange" min="5000" max="300000" step="1000" value="45000">
+      <div class="range-marks mono"><span>5k</span><span>75k</span><span>150k</span><span>225k</span><span>300k</span></div>
+    </div>
+
+    <button class="go" id="goBtn">จัดสเปคให้หน่อย</button>
+  </section>
+
+  <!-- ═══ ผลลัพธ์ ═══ -->
+  <section class="result hidden" id="result">
+
+    <div class="verdict" id="verdict"><!-- js --></div>
+
+    <div class="result-grid">
+      <div class="panel viz-panel">
+        <div class="panel-head"><h2 id="vizTitle">ผังเครื่อง</h2><span class="mono dim" id="vizDims"></span></div>
+        <div id="vizWrap"><!-- svg --></div>
+        <p class="viz-note">ทุกกล่องวาดจากขนาดจริง (มม.) ของอุปกรณ์ — ชี้ที่ชิ้นส่วนเพื่อไฮไลต์ในรายการ</p>
+      </div>
+
+      <div class="panel parts-panel">
+        <div class="panel-head"><h2>รายการอุปกรณ์</h2><span class="mono" id="partsTotal"></span></div>
+        <ol class="parts" id="partsList"><!-- js --></ol>
+      </div>
+    </div>
+
+    <div class="panel ai-panel">
+      <div class="panel-head"><h2>เหตุผลจาก AI</h2><span class="mono" id="aiModelTag"></span></div>
+      <div class="ai-body" id="aiBody"><span class="thinking">กำลังเรียบเรียง…</span></div>
+    </div>
+
+    <div class="triple">
+      <div class="panel"><div class="panel-head"><h2>ประสิทธิภาพโดยประมาณ</h2></div><ul class="kv" id="perfList"></ul></div>
+      <div class="panel"><div class="panel-head"><h2>อุณหภูมิ / พลังงาน</h2></div><ul class="kv" id="tempList"></ul></div>
+      <div class="panel"><div class="panel-head"><h2>อัปเกรดขั้นถัดไป</h2></div><ul class="upgrades" id="upgradeList"></ul></div>
+    </div>
+
+    <div class="panel refs-panel">
+      <div class="panel-head"><h2>แหล่งอ้างอิงการคำนวณ</h2><span class="mono">ตรวจราคา ส.ค. 2026</span></div>
+      <ul class="refs" id="refsList"></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>SpecSheet · เดโมต้นแบบ — ราคาเป็นค่าประมาณ ตรวจกับหน้าร้านก่อนซื้อจริง</span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/viz.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
