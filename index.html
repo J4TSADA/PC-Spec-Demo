@@ -20,10 +20,20 @@
     <a href="index.html" class="tab active">เซิร์ฟเวอร์ / SME</a>
     <a href="gaming.html" class="tab">คอมทั่วไป / เกม</a>
   </nav>
-  <div class="ai-switch" id="aiSwitch">
-    <span class="ai-label">โมเดล</span>
-    <button class="ai-pill active" data-model="gemini">Gemini</button>
-    <button class="ai-pill" data-model="pathumma">Pathumma</button>
+  <div class="ai-pipe" id="aiPipe">
+    <span class="pipe-label">สายงาน AI</span>
+
+    <span class="stage" id="stGemini" data-state="idle">
+      <span class="dot"></span><span class="st-name">Gemini</span><em>วิเคราะห์</em>
+    </span>
+
+    <span class="pipe-arrow">→</span>
+
+    <button class="stage toggle on" id="stPathumma" data-state="idle"
+            aria-pressed="true" title="ปิดเพื่อดูร่างดิบจาก Gemini">
+      <span class="dot"></span><span class="st-name">Pathumma</span><em>เรียบเรียงไทย</em>
+    </button>
+
     <span class="mode-badge" id="modeBadge" title="ตอนนี้ใช้ข้อมูลจำลองในเครื่อง ต่อ backend จริงได้ ดู README">โหมดจำลอง</span>
   </div>
 </header>
@@ -68,6 +78,8 @@
   <!-- ═══ ผลลัพธ์ ═══ -->
   <section class="result hidden" id="result">
 
+    <p class="polish-note mono" id="polishNote"></p>
+
     <div class="verdict" id="verdict"><!-- js --></div>
 
     <div class="result-grid">
@@ -80,12 +92,19 @@
       <div class="panel parts-panel">
         <div class="panel-head"><h2>รายการอุปกรณ์</h2><span class="mono" id="partsTotal"></span></div>
         <ol class="parts" id="partsList"><!-- js --></ol>
+        <p class="budget-left hidden" id="budgetLeft"></p>
       </div>
     </div>
 
     <div class="panel ai-panel">
       <div class="panel-head"><h2>เหตุผลจาก AI</h2><span class="mono" id="aiModelTag"></span></div>
-      <div class="ai-body" id="aiBody"><span class="thinking">กำลังเรียบเรียง…</span></div>
+      <div class="ai-body" id="aiBody"><span class="thinking">กำลังวิเคราะห์</span></div>
+      <div class="ai-compare">
+        <button class="cmp-btn" id="draftToggle" aria-expanded="false">
+          ดูร่างก่อนเรียบเรียง (จาก Gemini)
+        </button>
+        <pre class="draft-box hidden" id="draftBox"></pre>
+      </div>
     </div>
 
     <div class="triple">

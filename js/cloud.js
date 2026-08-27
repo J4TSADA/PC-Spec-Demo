@@ -52,7 +52,15 @@ window.CLOUD = (function () {
     /* home server เปิด 24 ชม. — คิดไฟเต็มเดือน */
 
     const monthlySaving = cloudMonthly - elecUse;       // ที่ประหยัดได้ต่อเดือนถ้าประกอบเอง
-    const breakEven = monthlySaving > 0 ? Math.ceil(total / monthlySaving) : Infinity;
+
+    /* มูลค่าขายต่อ — เช่า cloud จบแล้วไม่เหลืออะไร ประกอบเองยังมีของขายได้
+       ไม่นับตรงนี้คือเทียบไม่แฟร์ ประเมินอนุรักษ์นิยมที่ 40% เมื่อครบอายุคุ้มค่า
+       (การ์ดจอมือสองในไทยปกติได้มากกว่านี้ แต่ตั้งต่ำไว้ดีกว่าโม้) */
+    const RESALE_RATE = 0.4;
+    const resale = Math.round(total * RESALE_RATE);
+    const netCost = total - resale;                     // ต้นทุนที่จ่ายจริงหลังขายต่อ
+
+    const breakEven = monthlySaving > 0 ? Math.ceil(netCost / monthlySaving) : Infinity;
     const horizon = c.refreshMonths;                    // อายุคุ้มค่าของฮาร์ดแวร์
 
     let verdict = "build";
@@ -63,7 +71,7 @@ window.CLOUD = (function () {
        จึงแนะนำ GFN เฉพาะตอนงบยังไม่ถึงสเปคขั้นต่ำ และยังโชว์เลข GFN ให้ดูเสมอ */
     else if (breakEven > horizon) verdict = "cloud";
 
-    return { verdict, under, total, cloudMonthly: Math.round(cloudMonthly),
+    return { verdict, under, total, resale, netCost, cloudMonthly: Math.round(cloudMonthly),
              cloudLabel, elecMonthly: elecUse, monthlySaving: Math.round(monthlySaving),
              breakEven, horizon, hours, isGfn: !!c.isGfn, isStorage: !!c.isStorage };
   }
@@ -75,9 +83,11 @@ window.CLOUD = (function () {
     const be = (ev.breakEven === Infinity) ? "ไม่มีวันคืนทุน" : ev.breakEven + " เดือน";
     const math =
       '<div class="verdict-math">' +
-      'ค่าเครื่องรวม <b>' + fmt(ev.total) + '฿</b> · cloud <b>' + fmt(ev.cloudMonthly) + '฿/ด.</b> (' + ev.cloudLabel + ')' +
+      'ค่าเครื่องรวม <b>' + fmt(ev.total) + '฿</b> − มูลค่าขายต่อที่ ' + ev.horizon + ' เดือน (40%) <b>' + fmt(ev.resale) + '฿</b>' +
+      ' = ต้นทุนจริง <b>' + fmt(ev.netCost) + '฿</b><br>' +
+      'cloud <b>' + fmt(ev.cloudMonthly) + '฿/ด.</b> (' + ev.cloudLabel + ')' +
       ' · ค่าไฟถ้าประกอบเอง <b>' + fmt(ev.elecMonthly) + '฿/ด.</b><br>' +
-      'จุดคืนทุน = ' + fmt(ev.total) + ' ÷ (' + fmt(ev.cloudMonthly) + ' − ' + fmt(ev.elecMonthly) + ') = <b>' + be + '</b>' +
+      'จุดคืนทุน = ' + fmt(ev.netCost) + ' ÷ (' + fmt(ev.cloudMonthly) + ' − ' + fmt(ev.elecMonthly) + ') = <b>' + be + '</b>' +
       ' · เทียบกับอายุคุ้มค่าฮาร์ดแวร์ <b>' + ev.horizon + ' เดือน</b><br>' +
       'ชั่วโมงใช้งานของคุณ: <input type="number" class="hours-inline" id="hoursInput" min="5" max="720" value="' + ev.hours + '"> ชม./เดือน — แก้เลขนี้แล้วคำตัดสินคำนวณใหม่ทันที' +
       '</div>';
@@ -91,20 +101,20 @@ window.CLOUD = (function () {
         : "ที่ชั่วโมงใช้งานระดับนี้ กว่าเครื่องจะคืนทุน (" + be + ") ฮาร์ดแวร์ก็ตกรุ่นก่อน (" + ev.horizon + " เดือน)";
       return '<div class="verdict cloud"><span class="verdict-tag">คำตัดสิน — ยังไม่ควรประกอบ</span>' +
         '<h3>เก็บงบไว้ก่อน ใช้ cloud คุ้มกว่า</h3>' +
-        '<p>' + why + (ev.under && ev.isGfn ? '' : ' เริ่มจาก ' + alt + ' ราว ' + fmt(ev.cloudMonthly) + '฿/เดือน ') +
+        '<p data-polish>' + why + (ev.under && ev.isGfn ? '' : ' เริ่มจาก ' + alt + ' ราว ' + fmt(ev.cloudMonthly) + '฿/เดือน ') +
         'พอชั่วโมงใช้งานสูงขึ้นหรือเก็บงบถึงสเปคถัดไป ค่อยกลับมาดูใหม่ — ตัวเลขด้านล่างตรวจเองได้ทุกตัว</p>' + math + '</div>';
     }
     if (ev.isGfn) {
       return '<div class="verdict build"><span class="verdict-tag">คำตัดสิน — ประกอบเองคุ้ม</span>' +
         '<h3>' + tierName + '</h3>' +
-        '<p>เชิงตัวเลขล้วนๆ ' + ev.cloudLabel + ' (' + fmt(ev.cloudMonthly) + '฿/ด.) ถูกกว่าเสมอ ' +
+        '<p data-polish>เชิงตัวเลขล้วนๆ ' + ev.cloudLabel + ' (' + fmt(ev.cloudMonthly) + '฿/ด.) ถูกกว่าเสมอ ' +
         'แต่มันได้แค่ "สตรีมเกม" — มีเพดาน 100 ชม./เดือน ต้องมีเน็ตนิ่งและอุปกรณ์อยู่แล้ว ' +
         'ส่วนเครื่องนี้เป็นคอมเต็มตัว ใช้เรียน ทำงาน ตัดต่อ และขายต่อได้ เราจึงแนะนำให้ประกอบเมื่องบถึงระดับนี้ ' +
         'ถ้าคุณต้องการแค่เกมล้วนๆ ปีละไม่กี่สิบชั่วโมง cloud ก็เป็นคำตอบที่ดี — เลขอยู่ข้างล่าง ตัดสินเองได้</p>' + math + '</div>';
     }
     return '<div class="verdict build"><span class="verdict-tag">คำตัดสิน — ประกอบเองคุ้ม</span>' +
       '<h3>' + tierName + '</h3>' +
-      '<p>ที่ชั่วโมงใช้งานของคุณ เครื่องนี้คืนทุนใน <b>' + be + '</b> เร็วกว่าอายุคุ้มค่าฮาร์ดแวร์ (' + ev.horizon + ' เดือน) ' +
+      '<p data-polish>ที่ชั่วโมงใช้งานของคุณ เครื่องนี้คืนทุนใน ' + be + ' เร็วกว่าอายุคุ้มค่าฮาร์ดแวร์ (' + ev.horizon + ' เดือน) ' +
       'หลังจากนั้นคือกำไรเทียบกับการเช่า และเครื่องยังเป็นของคุณไว้ขายต่อได้</p>' + math + '</div>';
   }
 

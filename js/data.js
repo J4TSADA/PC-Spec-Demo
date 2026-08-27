@@ -20,7 +20,7 @@ window.SPEC_DATA = (function () {
 
   const AI_TIERS = [
     {
-      id: "ai1", min: 25000, max: 44999,
+      id: "ai1", min: 38600, max: 87299,
       name: "เครื่องเริ่มต้นสาย Inference (24GB VRAM)",
       chip: "ENTRY · 24GB",
       watt: 420, idleWatt: 65,
@@ -66,7 +66,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "ai2", min: 45000, max: 99999,
+      id: "ai2", min: 87300, max: 163799,
       name: "เครื่อง 48GB VRAM สองใบ — รัน 70B ในบ้าน",
       chip: "DUAL GPU · 48GB",
       watt: 780, idleWatt: 95,
@@ -112,7 +112,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "ai3", min: 100000, max: 300000,
+      id: "ai3", min: 163800, max: 267299,
       name: "RTX 5090 Workstation — แรงสุดในร่างเดียว",
       chip: "PRO · 32GB GDDR7",
       watt: 850, idleWatt: 90,
@@ -156,11 +156,56 @@ window.SPEC_DATA = (function () {
         { title: "RTX 5090 ใบที่สอง", cost: "+89,000", gain: "VRAM 64GB — fine-tune 70B ด้วย QLoRA" },
       ],
     },
+    {
+      id: "ai4", min: 267300, max: 300000,
+      name: "Dual RTX 5090 — 64GB VRAM สำหรับ fine-tune จริงจัง",
+      chip: "DUAL PRO · 64GB",
+      watt: 1450, idleWatt: 130,
+      kase: { name: "Full Tower E-ATX", w: 600, h: 600 },
+      cloud: { rateUsd: 1.98, gpuLabel: "2× RTX 5090 32GB (RunPod Secure)", refreshMonths: 36 },
+      parts: [
+        { type: "GPU", name: "RTX 5090 32GB ×2", price: 178000, dims: { w: 340, h: 300 },
+          reason: "VRAM 64GB เปิดทาง QLoRA บนโมเดล 70B และเทรนขนานสองใบได้เต็มความเร็ว",
+          upgrade: "ระดับถัดไปคือ RTX PRO 6000 96GB ใบเดียว (ราคาข้ามหลักล้าน)" },
+        { type: "CPU", name: "Ryzen 9 9950X (16C)", price: 23000, dims: { w: 40, h: 40 },
+          reason: "16 คอร์ป้อนข้อมูลให้การ์ดสองใบทัน และถูกกว่า Threadripper ราว 40,000 โดยเสียแค่เลน PCIe" },
+        { type: "MB", name: "X870E (x8/x8)", price: 13500, dims: { w: 305, h: 244 },
+          reason: "การ์ดสองใบวิ่งที่ x8 ต่อใบ ซึ่งพอสำหรับ inference — ถ้าจะเทรนหนักค่อยขยับไป TRX50" },
+      ],
+      parts2: [
+        { type: "RAM", name: "DDR5 96GB (2×48)", price: 11500, dims: { w: 134, h: 32 },
+          reason: "รองรับ dataset ในแรมได้กว้าง โดยไม่ต้องจ่ายค่า ECC ที่แพงกว่าเท่าตัว" },
+        { type: "SSD", name: "NVMe 4TB Gen5 ×2", price: 13800, dims: { w: 80, h: 22 },
+          reason: "แยกจานเทรนกับจานเก็บ checkpoint ไม่แย่ง IO กัน" },
+        { type: "PSU", name: "1600W 80+ Titanium", price: 12500, dims: { w: 200, h: 86 },
+          reason: "5090 สองใบ transient รวมทะลุ 1,400W ต้องใช้ Titanium ที่ทนช่วงพีค" },
+        { type: "COOL", name: "AIO 420mm + พัดลมเสริม", price: 8500, dims: { w: 458, h: 55 },
+          reason: "9950X กินไฟ 230W ต่อเนื่องตอนป้อนงานสองการ์ด ลมอย่างเดียวเอาไม่อยู่" },
+        { type: "CASE", name: "Full Tower E-ATX (รองรับ 2 สล็อตเว้น)", price: 6500, dims: { w: 600, h: 600 },
+          reason: "ต้องมีที่ให้การ์ดสองใบหายใจ และรับบอร์ด E-ATX ขนาดเต็ม" },
+      ],
+      perf: [
+        { k: "Llama 3.1 70B (Q4)", v: "~45 tok/s" },
+        { k: "QLoRA fine-tune 70B", v: "ทำได้" },
+        { k: "LoRA fine-tune 8B", v: "~18 นาที/epoch" },
+        { k: "ผู้ใช้พร้อมกัน (8B)", v: "~15-20 คน" },
+      ],
+      temps: [
+        { k: "GPU บน / ล่าง", v: "76 / 70°C" },
+        { k: "CPU", v: "75–85°C", hot: true },
+        { k: "กินไฟเต็มโหลด", v: "~1,450W", hot: true },
+        { k: "ค่าไฟ 8 ชม./วัน", v: "~1,570฿/ด." },
+      ],
+      upgrades: [
+        { title: "แยกวงจร 20A + UPS 3000VA", cost: "+25,000", gain: "1,450W ต่อเนื่องเกินเบรกเกอร์บ้านมาตรฐาน" },
+        { title: "10GbE + NAS 40TB", cost: "+45,000", gain: "แยก dataset ออกจากเครื่องเทรน ทีมเข้าถึงพร้อมกันได้" },
+      ],
+    },
   ];
 
   const HOME_TIERS = [
     {
-      id: "h1", min: 5000, max: 11999,
+      id: "h1", min: 9700, max: 24599,
       name: "Mini PC N100 — เซิร์ฟเวอร์เงียบกินไฟ 15W",
       chip: "MINI · 15W",
       watt: 15, idleWatt: 7,
@@ -193,7 +238,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "h2", min: 12000, max: 34999,
+      id: "h2", min: 24600, max: 48399,
       name: "NAS DIY 4-Bay — เก็บได้ 16TB ขยายได้อีก",
       chip: "NAS · 4-BAY",
       watt: 55, idleWatt: 28,
@@ -236,7 +281,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "h3", min: 35000, max: 300000,
+      id: "h3", min: 48400, max: 300000,
       name: "Proxmox All-in-One — NAS + VM + กล้องวงจรปิด",
       chip: "AIO · VM+NAS",
       watt: 120, idleWatt: 55,
@@ -281,7 +326,7 @@ window.SPEC_DATA = (function () {
 
   const GAMING_TIERS = [
     {
-      id: "g1", min: 15000, max: 24999,
+      id: "g1", min: 17900, max: 30099,
       name: "1080p Esports — Valorant/Dota ลื่นเกินจอ",
       chip: "1080P ESPORTS",
       watt: 260, idleWatt: 45,
@@ -323,7 +368,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "g2", min: 25000, max: 39999,
+      id: "g2", min: 30100, max: 56299,
       name: "1080p สูงสุด / ชิม 1440p",
       chip: "1080P ULTRA",
       watt: 330, idleWatt: 50,
@@ -364,7 +409,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "g3", min: 40000, max: 69999,
+      id: "g3", min: 56300, max: 92899,
       name: "1440p High Refresh — จุดหวานของยุคนี้",
       chip: "1440P · 165HZ",
       watt: 420, idleWatt: 55,
@@ -407,7 +452,7 @@ window.SPEC_DATA = (function () {
       ],
     },
     {
-      id: "g4", min: 70000, max: 200000,
+      id: "g4", min: 92900, max: 200000,
       name: "4K Ultra — ไม่ต้องประนีประนอม",
       chip: "4K · RT ULTRA",
       watt: 560, idleWatt: 65,
@@ -454,9 +499,14 @@ window.SPEC_DATA = (function () {
   return {
     FX, ELEC, buyLinks,
     usecases: {
-      ai:     { label: "AI Server",   minBuild: 25000, tiers: AI_TIERS },
-      home:   { label: "Home Server", minBuild: 5000,  tiers: HOME_TIERS },
-      gaming: { label: "เล่นเกม",     minBuild: 15000, tiers: GAMING_TIERS },
+      /* defaultHours = ชั่วโมงใช้งานต่อเดือนที่สมเหตุสมผลกับงานนั้นจริงๆ
+         ค่านี้มีผลกับคำตัดสินมาก — ตั้งต่ำเกินไปจะสรุปว่า "ไปเช่า cloud" เกือบทุกกรณี
+         ai   200 ชม. (~7 ชม./วัน) คนซื้อเครื่อง AI มาไม่ได้ใช้วันละ 2 ชม.
+         home 720 ชม. (24/7)      เซิร์ฟเวอร์บ้านเปิดตลอด
+         gaming 60 ชม. (~2 ชม./วัน) ค่าเฉลี่ยคนเล่นเกมทั่วไป */
+      ai:     { label: "AI Server",   minBuild: 38600, defaultHours: 200, tiers: AI_TIERS },
+      home:   { label: "Home Server", minBuild: 9700,  defaultHours: 720, tiers: HOME_TIERS },
+      gaming: { label: "เล่นเกม",     minBuild: 17900, defaultHours: 60,  tiers: GAMING_TIERS },
     },
   };
 })();
